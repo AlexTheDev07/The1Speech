@@ -89,45 +89,100 @@
 <body>
 
 <div class="container">
-    <h2>Speech to Text</h2>
-    <button class="button" onclick="startListening()">Start Speaking</button>
+    <h2>Speech</h2>
+    <button id="recordButton" class="button" onclick="toggleRecording()">Start Recording</button>
     <div id="transcription" aria-live="polite" placeholder="Your speech will appear here..."></div>
 </div>
 
 <script>
-    function startListening() {
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "firebase/app";
+    import { getDatabase, ref, set, onValue } from "firebase/database";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCzv5mbY-F9hHXcWI8-wvyznL4cXQQNUBA",
+      authDomain: "speech-cd68b.firebaseapp.com",
+      databaseURL: "https://speech-cd68b-default-rtdb.firebaseio.com", // Add your database URL
+      projectId: "speech-cd68b",
+      storageBucket: "speech-cd68b.appspot.com",
+      messagingSenderId: "189245008930",
+      appId: "1:189245008930:web:08f95d15ab40f03672ae7b",
+      measurementId: "G-16JL9LCMMF"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let isRecording = false;
+    let recognition;
+
+    function toggleRecording() {
         if (!('webkitSpeechRecognition' in window)) {
             alert("Your browser doesn't support speech recognition. Try using Chrome.");
             return;
         }
-        
-        const recognition = new webkitSpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.lang = 'no-NO';
 
-        recognition.onstart = function() {
-            document.getElementById('transcription').innerHTML = "Listening...";
-        };
+        if (isRecording) {
+            // Stop recording
+            recognition.stop();
+            document.getElementById('recordButton').textContent = "Start Recording";
+            isRecording = false;
+        } else {
+            // Start recording
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'no-NO';
 
-        recognition.onresult = function(event) {
-            let transcript = '';
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                transcript += event.results[i][0].transcript;
-            }
-            document.getElementById('transcription').innerHTML = transcript;
-        };
+            recognition.onstart = function() {
+                document.getElementById('transcription').innerHTML = "Listening...";
+                document.getElementById('recordButton').textContent = "Stop Recording";
+                isRecording = true;
+            };
 
-        recognition.onerror = function(event) {
-            alert('Error occurred in speech recognition: ' + event.error);
-        };
+            recognition.onresult = function(event) {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                document.getElementById('transcription').innerHTML = transcript;
 
-        recognition.onend = function() {
-            document.getElementById('transcription').innerHTML += " [Stopped Listening]";
-        };
+                // Save to Firebase
+                set(ref(db, 'transcription/'), {
+                    text: transcript
+                });
+            };
 
-        recognition.start();
+            recognition.onerror = function(event) {
+                alert('Error occurred in speech recognition: ' + event.error);
+                isRecording = false;
+                document.getElementById('recordButton').textContent = "Start Recording";
+            };
+
+            recognition.onend = function() {
+                if (isRecording) {
+                    document.getElementById('transcription').innerHTML += " [Stopped Listening]";
+                    document.getElementById('recordButton').textContent = "Start Recording";
+                    isRecording = false;
+                }
+            };
+
+            recognition.start();
+        }
     }
+
+    // Load the last transcription from Firebase on page load
+    window.onload = function() {
+        const transcriptionRef = ref(db, 'transcription/text');
+        onValue(transcriptionRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('transcription').innerHTML = data;
+            }
+        });
+    };
 </script>
 
 </body>
