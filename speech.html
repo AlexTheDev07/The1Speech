@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Speech to Text</title>
     <link rel="stylesheet" href="speech.css">
-    <script type="module" src="speech.js"></script>
 </head>
 <body>
     <div class="container">
@@ -14,6 +13,9 @@
         <div id="transcription" aria-live="polite" placeholder="Your speech will appear here..."></div>
     </div>
     <div id="outputBox" aria-live="polite" placeholder="Output will appear here..."></div>
+    <button id="saveButton" class="button">Save Transcription</button>
+
+    <script type="module" src="speech.js"></script>
 
     <script>
         let isRecording = false;
@@ -47,10 +49,6 @@
                         transcript += event.results[i][0].transcript;
                     }
                     document.getElementById('transcription').innerHTML = transcript;
-
-                    // Remove Firebase save functionality
-                    // You can display the transcription in outputBox if needed
-                    document.getElementById('outputBox').innerHTML = transcript;
                 };
 
                 recognition.onerror = function(event) {
