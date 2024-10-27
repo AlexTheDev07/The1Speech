@@ -5,7 +5,7 @@ import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.1.2/
 const firebaseConfig = {
     apiKey: "AIzaSyCzv5mbY-F9hHXcWI8-wvyznL4cXQQNUBA",
     authDomain: "speech-cd68b.firebaseapp.com",
-    databaseURL: "https://speech-cd68b-default-rtdb.firebaseio.com", // Add your database URL
+    databaseURL: "https://speech-cd68b-default-rtdb.europe-west1.firebasedatabase.app", // Add your database URL
     projectId: "speech-cd68b",
     storageBucket: "speech-cd68b.appspot.com",
     messagingSenderId: "189245008930",
