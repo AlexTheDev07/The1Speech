@@ -4,87 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Speech to Text</title>
-    <style>
-        :root {
-            --primary-color: #007bff;
-            --primary-hover-color: #0056b3;
-            --background-color: #f4f4f9;
-            --container-background: #ffffff;
-            --border-color: #e0e0e0;
-            --text-color: #333;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-        }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: var(--background-color);
-            color: var(--text-color);
-        }
-
-        .container {
-            text-align: center;
-            max-width: 450px;
-            padding: 30px 25px;
-            border-radius: 12px;
-            background-color: var(--container-background);
-            box-shadow: 0 4px 20px var(--shadow-color);
-            transition: transform 0.3s ease;
-        }
-
-        .container:hover {
-            transform: translateY(-5px);
-        }
-
-        h2 {
-            margin-bottom: 20px;
-            color: var(--primary-color);
-            font-size: 1.8em;
-        }
-
-        #transcription {
-            width: 100%;
-            height: 120px;
-            margin-top: 20px;
-            font-size: 1.1em;
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background-color: #f9f9f9;
-            resize: none;
-            overflow-y: auto;
-        }
-
-        .button {
-            display: inline-block;
-            padding: 12px 25px;
-            font-size: 1.1em;
-            color: #fff;
-            background-color: var(--primary-color);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s ease;
-        }
-
-        .button:hover {
-            background-color: var(--primary-hover-color);
-        }
-
-        .button:active {
-            transform: scale(0.98);
-        }
-    </style>
+    <link rel="stylesheet" href="speech.css">
+    <script type="module" src="speech.js"></script>
 </head>
 <body>
 
@@ -94,28 +16,10 @@
     <div id="transcription" aria-live="polite" placeholder="Your speech will appear here..."></div>
 </div>
 
+<div id="outputBox" aria-live="polite" placeholder="Output will appear here..."></div>
+
 <script>
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "firebase/app";
-    import { getDatabase, ref, set, onValue } from "firebase/database";
-
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyCzv5mbY-F9hHXcWI8-wvyznL4cXQQNUBA",
-      authDomain: "speech-cd68b.firebaseapp.com",
-      databaseURL: "https://speech-cd68b-default-rtdb.firebaseio.com", // Add your database URL
-      projectId: "speech-cd68b",
-      storageBucket: "speech-cd68b.appspot.com",
-      messagingSenderId: "189245008930",
-      appId: "1:189245008930:web:08f95d15ab40f03672ae7b",
-      measurementId: "G-16JL9LCMMF"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    let isRecording = false;
+   let isRecording = false;
     let recognition;
 
     function toggleRecording() {
@@ -172,17 +76,6 @@
             recognition.start();
         }
     }
-
-    // Load the last transcription from Firebase on page load
-    window.onload = function() {
-        const transcriptionRef = ref(db, 'transcription/text');
-        onValue(transcriptionRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                document.getElementById('transcription').innerHTML = data;
-            }
-        });
-    };
 </script>
 
 </body>
